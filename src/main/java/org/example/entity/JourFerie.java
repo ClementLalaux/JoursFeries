@@ -23,7 +23,7 @@ public class JourFerie {
         @Enumerated(EnumType.STRING)
         private Zone zone;
 
-        @ManyToMany
+        @ManyToMany(fetch = FetchType.LAZY)
         @JoinTable(
                 name = "jour_ferie_departement",
                 joinColumns = @JoinColumn(name = "jour_ferie_id"),

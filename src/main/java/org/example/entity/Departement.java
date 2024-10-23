@@ -19,7 +19,7 @@ public class Departement {
     private String nom; // Nom du département (ex. "Paris")
 
     // Relation avec les jours fériés
-    @ManyToMany(mappedBy = "departements")
+    @ManyToMany(mappedBy = "departements",fetch = FetchType.LAZY)
     @JsonManagedReference
     private Set<JourFerie> joursFeries = new HashSet<>();
 

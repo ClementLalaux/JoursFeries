@@ -49,22 +49,6 @@ public class JourFerieService {
         return restTemplate.getForObject(url, String.class);
     }
 
-    public void recupererJoursFeriesTouteRegion(String annee) {
-        List<String> zones = Arrays.asList("metropole", "alsace-moselle", "guadeloupe", "guyane", "la-reunion", "martinique", "mayotte");
-
-        for (String zone : zones) {
-            try {
-                Map<String, String> joursFeriesMap = recupererJoursFeriesDeZone(zone, annee);
-                if (joursFeriesMap != null) {
-                    traiterJoursFeries(joursFeriesMap, zone);
-                }
-            } catch (Exception e) {
-                System.err.println("Erreur inattendue lors du traitement de la zone : " + zone);
-                e.printStackTrace();
-            }
-        }
-    }
-
     private Map<String, String> recupererJoursFeriesDeZone(String zone, String annee) {
         String url = String.format("https://calendrier.api.gouv.fr/jours-feries/%s/%s.json", zone, annee);
         String response;
@@ -82,6 +66,22 @@ public class JourFerieService {
         }
 
         return null;
+    }
+
+    public void recupererJoursFeriesTouteRegion(String annee) {
+        List<String> zones = Arrays.asList("metropole", "alsace-moselle", "guadeloupe", "guyane", "la-reunion", "martinique", "mayotte");
+
+        for (String zone : zones) {
+            try {
+                Map<String, String> joursFeriesMap = recupererJoursFeriesDeZone(zone, annee);
+                if (joursFeriesMap != null) {
+                    traiterJoursFeries(joursFeriesMap, zone);
+                }
+            } catch (Exception e) {
+                System.err.println("Erreur inattendue lors du traitement de la zone : " + zone);
+                e.printStackTrace();
+            }
+        }
     }
 
     private void traiterJoursFeries(Map<String, String> joursFeriesMap, String zone) {
@@ -104,6 +104,7 @@ public class JourFerieService {
             }
         }
     }
+
 
     private void traiterAlsaceLorraine(JourFerie jourFerie) {
         jourFerie.setZone(JourFerie.Zone.ALSACE_LORRAINE);
