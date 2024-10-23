@@ -1,61 +1,57 @@
 package org.example.entity;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
+@Table(name = "jour_ferie")
 public class JourFerie {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
 
-        private String date;
+    @Column(name = "description", nullable = false)
+    private String description;
 
-        private String description;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "zone", nullable = false)
+    private DepartementEnum zone; // Zone associée
 
-        @Enumerated(EnumType.STRING)
-        private Zone zone;
 
-        @ManyToMany(fetch = FetchType.LAZY)
-        @JoinTable(
-                name = "jour_ferie_departement",
-                joinColumns = @JoinColumn(name = "jour_ferie_id"),
-                inverseJoinColumns = @JoinColumn(name = "departement_id")
-        )
-        @JsonBackReference
-        private Set<Departement> departements = new HashSet<>();
-
+    // Constructeurs
     public JourFerie() {
     }
 
-
-// getters, setters, constructors
-
-        public enum Zone {
-            METROPOLE, ALSACE_LORRAINE, ILES
-        }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
+    public JourFerie(LocalDate date, String description, DepartementEnum zone) {
         this.date = date;
+        this.description = description;
+        this.zone = zone;
     }
 
+    public JourFerie(LocalDate date, String description, DepartementEnum zone, String departements) {
+        this.date = date;
+        this.description = description;
+        this.zone = zone;
+    }
+
+    // Getters et Setters
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public String getDescription() {
@@ -66,34 +62,22 @@ public class JourFerie {
         this.description = description;
     }
 
-    public Zone getZone() {
+    public DepartementEnum getZone() {
         return zone;
     }
 
-    public void setZone(Zone zone) {
+    public void setZone(DepartementEnum zone) {
         this.zone = zone;
     }
 
-    public Set<Departement> getDepartements() {
-        return departements;
-    }
 
-    public void setDepartements(Set<Departement> departements) {
-        this.departements = departements;
-    }
-
-    public void addDepartement(Departement departement) {
-        this.departements.add(departement);
-    }
-
-    public JourFerie(String date, String description) {
-        this.date = date;
-        this.description = description;
-    }
-
-    public JourFerie(String date, String description, Zone zone) {
-        this.date = date;
-        this.description = description;
-        this.zone = zone;
+    @Override
+    public String toString() {
+        return "JourFerie{" +
+                "id=" + id +
+                ", date=" + date +
+                ", description='" + description + '\'' +
+                ", zone=" + zone +
+                '}';
     }
 }
