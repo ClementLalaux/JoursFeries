@@ -72,53 +72,64 @@ public class JourFerieService {
         }
     }
 
-//    private void traiterJoursFeries(Map<String, String> joursFeriesMap, String zone) {
-//        for (Map.Entry<String, String> entry : joursFeriesMap.entrySet()) {
-//            try {
-//                LocalDate date = LocalDate.parse(entry.getKey());
-//                String departements = ""; // Initialiser la chaîne des départements
-//                JourFerie jourFerie = new JourFerie(date, entry.getValue(), null, departements);
-//
-//                if (!existsByDate(date)) {
-//                    if (zone.equals("metropole")) {
-//                        jourFerie.setZone(DepartementEnum.METROPOLE); // Remplacez par la zone appropriée
-//                    } else if (zone.equals("alsace-moselle")) {
-//
-//                        departements = traiterAlsaceLorraine(jourFerie);
-//                    } else {
-//                        departements = traiterAutresIles(jourFerie, zone);
-//                    }
-//                    jourFerieRepository.save(jourFerie);
-//                }
-//            } catch (DataAccessException e) {
-//                System.err.println("Erreur lors de l'enregistrement d'un jour férié pour la zone : " + zone);
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-//
-//    private void traiterAlsaceLorraine(JourFerie jourFerie) {
-//
-//    }
-//
-//    private void traiterAutresIles(JourFerie jourFerie, String zone) {
-//        switch (zone) {
-//            case "guadeloupe":
-//                jourFerie.setZone(DepartementEnum.GUADELOUPE);
-//            case "guyane":
-//                jourFerie.setZone(DepartementEnum.GUYANE);
-//            case "la-reunion":
-//                jourFerie.setZone(DepartementEnum.REUNION);
-//            case "martinique":
-//                jourFerie.setZone(DepartementEnum.MARTINIQUE);
-//            case "mayotte":
-//                jourFerie.setZone(DepartementEnum.MAYOTTE);
-//            default:
-//                break;
-//        }
-//    }
+    private void traiterJoursFeries(Map<String, String> joursFeriesMap, String zone) {
+        for (Map.Entry<String, String> entry : joursFeriesMap.entrySet()) {
+            try {
+                LocalDate date = LocalDate.parse(entry.getKey());
+                String departements = ""; // Initialiser la chaîne des départements
+                JourFerie jourFerie = new JourFerie(date, entry.getValue(),null);
+
+                if (!existsByDate(date)) {
+                    if (zone.equals("metropole")) {
+                        jourFerie.setZone(DepartementEnum.valueOf("Métropole"));
+                    } else if (zone.equals("alsace-moselle")) {
+                        jourFerie.setZone(DepartementEnum.valueOf("Alsace-Moselle"));
+                    } else {
+                        traiterAutresIles(jourFerie, zone);
+                    }
+                    jourFerieRepository.save(jourFerie);
+                }
+            } catch (DataAccessException e) {
+                System.err.println("Erreur lors de l'enregistrement d'un jour férié pour la zone : " + zone);
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void traiterAlsaceLorraine(JourFerie jourFerie) {
+
+    }
+
+    private void traiterAutresIles(JourFerie jourFerie, String zone) {
+        switch (zone) {
+            case "guadeloupe":
+                jourFerie.setZone(DepartementEnum.valueOf("Iles"));
+            case "guyane":
+                jourFerie.setZone(DepartementEnum.valueOf("Iles"));
+            case "la-reunion":
+                jourFerie.setZone(DepartementEnum.valueOf("Iles"));
+            case "martinique":
+                jourFerie.setZone(DepartementEnum.valueOf("Iles"));
+            case "mayotte":
+                jourFerie.setZone(DepartementEnum.valueOf("Iles"));
+            default:
+                break;
+        }
+    }
 
     public boolean existsByDate(LocalDate date) {
         return jourFerieRepository.existsByDate(date);
+    }
+
+    public List<DepartementEnum> getDepartementsByZone(String zone) {
+        List<DepartementEnum> departements = new ArrayList<>();
+
+        for (DepartementEnum departement : DepartementEnum.values()) {
+            if (departement.getZone().equalsIgnoreCase(zone)) {
+                departements.add(departement);
+            }
+        }
+
+        return departements;
     }
 }

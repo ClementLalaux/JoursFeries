@@ -31,12 +31,6 @@ public class JourFerie {
         this.zone = zone;
     }
 
-    public JourFerie(LocalDate date, String description, DepartementEnum zone, String departements) {
-        this.date = date;
-        this.description = description;
-        this.zone = zone;
-    }
-
     // Getters et Setters
     public Long getId() {
         return id;
