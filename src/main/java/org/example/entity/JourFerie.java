@@ -18,14 +18,14 @@ public class JourFerie {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "zone", nullable = false)
-    private DepartementEnum zone; // Zone associée
+    private ZoneEnum zone; // Zone associée
 
 
     // Constructeurs
     public JourFerie() {
     }
 
-    public JourFerie(LocalDate date, String description, DepartementEnum zone) {
+    public JourFerie(LocalDate date, String description, ZoneEnum zone) {
         this.date = date;
         this.description = description;
         this.zone = zone;
@@ -56,11 +56,11 @@ public class JourFerie {
         this.description = description;
     }
 
-    public DepartementEnum getZone() {
+    public ZoneEnum getZone() {
         return zone;
     }
 
-    public void setZone(DepartementEnum zone) {
+    public void setZone(ZoneEnum zone) {
         this.zone = zone;
     }
 

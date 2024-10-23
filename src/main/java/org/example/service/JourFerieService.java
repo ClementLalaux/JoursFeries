@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.entity.JourFerie;
 import org.example.entity.DepartementEnum;
+import org.example.entity.ZoneEnum;
 import org.example.repository.JourFerieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -48,6 +49,7 @@ public class JourFerieService {
         try {
             String response = restTemplate.getForObject(url, String.class);
             ObjectMapper objectMapper = new ObjectMapper();
+            //
             return objectMapper.readValue(response, HashMap.class);
         } catch (RestClientException | JsonProcessingException e) {
             System.err.println("Erreur lors de l'appel de l'API pour la zone : " + zone);
@@ -56,64 +58,22 @@ public class JourFerieService {
         return null;
     }
 
-    public void recupererJoursFeriesTouteRegion(String annee) {
-        List<String> zones = Arrays.asList("metropole", "alsace-moselle", "guadeloupe", "guyane", "la-reunion", "martinique", "mayotte");
+    public void enregistrerJoursFeries(String annee) {
+        // Récupère toutes les zones définies dans l'énumération
+        for (ZoneEnum zone : ZoneEnum.values()) {
+            Map<String, String> joursFeries = recupererJoursFeriesDeZone(zone.getApiName(), annee);
+            if (joursFeries != null) {
+                for (Map.Entry<String, String> entry : joursFeries.entrySet()) {
+                    LocalDate date = LocalDate.parse(entry.getKey());
+                    String description = entry.getValue();
 
-        for (String zone : zones) {
-            try {
-                Map<String, String> joursFeriesMap = recupererJoursFeriesDeZone(zone, annee);
-                if (joursFeriesMap != null) {
-                    //traiterJoursFeries(joursFeriesMap, zone);
-                }
-            } catch (Exception e) {
-                System.err.println("Erreur inattendue lors du traitement de la zone : " + zone);
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void traiterJoursFeries(Map<String, String> joursFeriesMap, String zone) {
-        for (Map.Entry<String, String> entry : joursFeriesMap.entrySet()) {
-            try {
-                LocalDate date = LocalDate.parse(entry.getKey());
-                String departements = ""; // Initialiser la chaîne des départements
-                JourFerie jourFerie = new JourFerie(date, entry.getValue(),null);
-
-                if (!existsByDate(date)) {
-                    if (zone.equals("metropole")) {
-                        jourFerie.setZone(DepartementEnum.valueOf("Métropole"));
-                    } else if (zone.equals("alsace-moselle")) {
-                        jourFerie.setZone(DepartementEnum.valueOf("Alsace-Moselle"));
-                    } else {
-                        traiterAutresIles(jourFerie, zone);
+                    if (!existsByDate(date)) {
+                        // Crée et enregistre le jour férié
+                        JourFerie jourFerie = new JourFerie(date, description, zone);
+                        create(jourFerie);
                     }
-                    jourFerieRepository.save(jourFerie);
                 }
-            } catch (DataAccessException e) {
-                System.err.println("Erreur lors de l'enregistrement d'un jour férié pour la zone : " + zone);
-                e.printStackTrace();
             }
-        }
-    }
-
-    private void traiterAlsaceLorraine(JourFerie jourFerie) {
-
-    }
-
-    private void traiterAutresIles(JourFerie jourFerie, String zone) {
-        switch (zone) {
-            case "guadeloupe":
-                jourFerie.setZone(DepartementEnum.valueOf("Iles"));
-            case "guyane":
-                jourFerie.setZone(DepartementEnum.valueOf("Iles"));
-            case "la-reunion":
-                jourFerie.setZone(DepartementEnum.valueOf("Iles"));
-            case "martinique":
-                jourFerie.setZone(DepartementEnum.valueOf("Iles"));
-            case "mayotte":
-                jourFerie.setZone(DepartementEnum.valueOf("Iles"));
-            default:
-                break;
         }
     }
 
@@ -121,15 +81,5 @@ public class JourFerieService {
         return jourFerieRepository.existsByDate(date);
     }
 
-    public List<DepartementEnum> getDepartementsByZone(String zone) {
-        List<DepartementEnum> departements = new ArrayList<>();
 
-        for (DepartementEnum departement : DepartementEnum.values()) {
-            if (departement.getZone().equalsIgnoreCase(zone)) {
-                departements.add(departement);
-            }
-        }
-
-        return departements;
-    }
 }

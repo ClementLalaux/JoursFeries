@@ -42,7 +42,7 @@ public class JourFerieController {
 
     @PostMapping("jours-feries-me")
     public ResponseEntity<List<JourFerie>> postJoursFeriesFromApi(@RequestParam("annee") String annee) throws JsonProcessingException {
-        jourFerieService.recupererJoursFeriesTouteRegion(annee);
+        jourFerieService.enregistrerJoursFeries(annee);
         return ResponseEntity.ok(jourFerieService.findAll());
     }
 
