@@ -2,15 +2,15 @@ package org.example.controller;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.example.entity.DepartementEnum;
 import org.example.entity.JourFerie;
+import org.example.entity.ZoneEnum;
 import org.example.service.JourFerieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @RestController
 @RequestMapping("/")
@@ -45,5 +45,36 @@ public class JourFerieController {
         jourFerieService.enregistrerJoursFeries(annee);
         return ResponseEntity.ok(jourFerieService.findAll());
     }
+
+    @GetMapping("/alsace-moselle")
+    public List<Map<String, Object>> getJoursFeriesAlsaceMoselle() {
+        // Appelle le service pour récupérer les jours fériés avec les départements associés à la zone ALSACE_MOSELLE
+        return jourFerieService.getJoursFeriesAvecZone(ZoneEnum.ALSACE_MOSELLE);
+    }
+
+    @GetMapping("/departementCode")
+    public List<JourFerie> getJoursFeriesParDepartementCode(@RequestParam("code") String codeDepartement) {
+        // Récupère l'énumération du département à partir du code
+        DepartementEnum departement = Arrays.stream(DepartementEnum.values())
+                .filter(dept -> dept.getCode().equals(codeDepartement))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Département non trouvé avec le code : " + codeDepartement));
+
+        // Appelle le service pour récupérer les jours fériés liés à ce département
+        return jourFerieService.getJoursFeriesParDepartement(departement);
+    }
+
+    @GetMapping("/departementNom")
+    public List<JourFerie> getJoursFeriesParDepartementName(@RequestParam("nom") String nomDepartement) {
+        // Récupère l'énumération du département à partir du code
+        DepartementEnum departement = Arrays.stream(DepartementEnum.values())
+                .filter(dept -> dept.getNom().equals(nomDepartement))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Département non trouvé avec le nom : " + nomDepartement));
+
+        // Appelle le service pour récupérer les jours fériés liés à ce département
+        return jourFerieService.getJoursFeriesParDepartement(departement);
+    }
+
 
 }

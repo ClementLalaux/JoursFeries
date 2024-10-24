@@ -74,4 +74,5 @@ public class JourFerie {
                 ", zone=" + zone +
                 '}';
     }
+
 }
